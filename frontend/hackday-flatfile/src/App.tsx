@@ -1,6 +1,7 @@
+import React from 'react'
 import Loader from './pages/Loader';
 
-function App() {
+const App = () => {
   return (
     <>
       <Loader/>
@@ -8,4 +9,4 @@ function App() {
   );
 }
 
-export default App;
+export default App
