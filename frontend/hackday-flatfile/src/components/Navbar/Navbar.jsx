@@ -1,7 +1,7 @@
 import React from 'react';
 import './Navbar.css';
 
-import logo from '../assets/Numerator_Logo.png';
+import logo from '../../assets/Numerator_Logo.png';
 
 const Navbar = () => {
   return (
