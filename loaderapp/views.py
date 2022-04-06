@@ -20,6 +20,5 @@ def fetch_file_by_batch_id(batch_id):
 
 def load_brand_file(request):
     if request.method=='GET':
-        
         return HttpResponse('We loaded the brand file (not really)')
 
