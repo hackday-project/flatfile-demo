@@ -1,5 +1,3 @@
-import React from 'react'
-import { useRef, useState } from "react";
 import PropTypes, { InferProps } from 'prop-types'
 
 import Card from 'react-bootstrap/Card'
@@ -11,15 +9,15 @@ const embedId = "897b2c8b-123e-428c-a51d-354b9b834426";
 const endUserEmail = "angusleung228@hotmail.com";
 const privateKey = "WV5ups3cIjAkgmp6PdZsHwDUXuCXXe5N9y9yiGGSvahQewRV1c0VJiTVI8L7H5YZ";
 
-const CustomCard: any = ({image}: InferProps<typeof CustomCard.propTypes>) => {
+const CustomCard: any = ({ title, description, image}: InferProps<typeof CustomCard.propTypes>) => {
 
   return (
     <Card style={{ width: '18rem' }}>
       <Card.Img variant="top" src={image} height={180}/>
       <Card.Body>
-        <Card.Title>Brand Threshold</Card.Title>
+        <Card.Title>{title}</Card.Title>
         <Card.Text>
-          Upload a brand threshold CSV to flatfile
+          {description}
         </Card.Text>
         <Button variant="primary">Upload</Button>
       </Card.Body>
@@ -28,7 +26,9 @@ const CustomCard: any = ({image}: InferProps<typeof CustomCard.propTypes>) => {
 }
 
 CustomCard.propTypes = {
-  image: PropTypes.string
+  title: PropTypes.string,
+  description: PropTypes.string,
+  image: PropTypes.any
 };
 
 export default CustomCard
