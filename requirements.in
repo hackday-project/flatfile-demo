@@ -1,0 +1,4 @@
+django==2.0
+requests==2.23.0                      # [Apache] | <OWNER: kyle.beauregard@numerator.com> | A simple, yet elegant HTTP library
+# Database and Storage
+PyMySQL==1.0.2                        # [GPL v2]
