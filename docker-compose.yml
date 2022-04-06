@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/flatfile-demo
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.6.50
+    environment:
+      MYSQL_ROOT_PASSWORD: hackday2022-password
+      MYSQL_DATABASE: hackday-db
+      MYSQL_USER: hackday2022
+      MYSQL_PASSWORD: hackday2022-password
+    command: --max_allowed_packet=32505856
+    volumes:
+      - mysql-db:/var/lib/mysql
+    ports:
+      - 3306:3306
+  
+volumes:
+  mysql-db: 
