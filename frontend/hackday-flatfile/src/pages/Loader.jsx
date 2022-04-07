@@ -10,6 +10,7 @@ const Loader = () => {
   const brandDescription = "Upload a brand threshold CSV to Flatfile"
   const categoryDescription = "Upload a category threshold CSV to Flatfile"
 
+
   useEffect(() => {
     let url = "http://localhost:8000/loaderapp/trigger-brand";
     fetch(url, {
@@ -18,6 +19,7 @@ const Loader = () => {
       headers: {'Content-Type':'application/json'},
     }).then(response => console.log(response))
   }, []);
+
 
 
   return (

@@ -1,6 +1,7 @@
 import PropTypes, { InferProps } from 'prop-types';
 
 
+
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
@@ -24,6 +25,7 @@ const CustomCard: any = ({ title, description, image}: InferProps<typeof CustomC
 
     importer.launch();
   }
+
 
   return (
     <Card style={{ width: '18rem' }}>
