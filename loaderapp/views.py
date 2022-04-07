@@ -5,6 +5,8 @@ import json
 from loaderapp.models import BrandThreshold, Brand
 from decimal import Decimal
 import traceback
+
+
 class FlatFileApi:
 
     FLAT_FILE_URL = "https://api.us.flatfile.io/rest/"
@@ -39,7 +41,6 @@ def load_brand_file(request):
         dct = FlatFileApi().fetch_rows_by_batch_id(id)
         errors = list()
         successes = 0
-        print(dct)
         for d in dct['data']:
             try:
                 if not d['valid']:
