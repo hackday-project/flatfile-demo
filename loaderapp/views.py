@@ -19,17 +19,19 @@ class FlatFileApi:
         "Authorization": AUTH_TOK
     }
 
+    def _make_get_call(self,url, **kwargs):
+        res = requests.get(url, headers=self.headers, **kwargs)
+        data = res.content.decode()
+        data = json.loads(data)
+        return data
+
     def fetch_rows_by_batch_id(self, batch_id):
         fetch_url = f"{self.FLAT_FILE_URL}batch/{batch_id}/rows"
-        res = requests.get(fetch_url, headers=self.headers)
-        data = json.loads(res.content.decode())
-        return data
+        return self._make_get_call(fetch_url)
 
     def fetch_batch_meta(self, batch_id):
         fetch_url = f"{self.FLAT_FILE_URL}batch/{batch_id}/"
-        res = requests.get(fetch_url, headers=self.headers)
-        data = json.loads(res.content.decode())
-        return data
+        return self._make_get_call(fetch_url)
 
 from django.views.decorators.csrf import csrf_exempt  # TODO: undo this
 @csrf_exempt  # TODO: undo this
@@ -55,6 +57,6 @@ def load_brand_file(request):
                 errors.append(errorJson)
             else:
                 successes += 1
-        response = {'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
+        response = {'batch_id':id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
         return JsonResponse(response, safe=False)
 
