@@ -1,4 +1,4 @@
-FROM python:3.6.12-stretch AS base
+FROM python:3.8-slim-buster AS base
 
 # set a directory for the app
 WORKDIR /flatfile-demo/

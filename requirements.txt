@@ -18,7 +18,7 @@ django-cors-headers==3.4.0
     # via -r requirements.in
 djangorestframework==3.13.1
     # via djangorestframework-simplejwt
-djangorestframework-simplejwt==5.1.0
+djangorestframework-simplejwt==5.0.0
     # via -r requirements.in
 idna==2.10
     # via requests
