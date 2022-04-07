@@ -57,6 +57,6 @@ def load_brand_file(request):
                 errors.append(errorJson)
             else:
                 successes += 1
-        response = {'batch_id':id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
+        response = {'batch_id': id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
         return JsonResponse(response, safe=False)
 
