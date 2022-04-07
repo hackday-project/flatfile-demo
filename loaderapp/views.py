@@ -45,15 +45,13 @@ def load_brand_file(request):
         successes = 0
         for d in dct['data']:
             try:
-                if not d['valid']:
-                    continue
                 row = d['mapped']
                 version = row['version']
                 threshold = Decimal(row['min_threshold'])
                 brand, _ = Brand.objects.get_or_create(key=row['key'], defaults={'name': row['key']})
                 BrandThreshold.objects.create(version=version, min_threshold=threshold, brand=brand)
             except Exception:
-                errorJson = dict(id=d['id'], batch_id=d['batchId'], row=d['sequence'], error=traceback.format_exc())
+                errorJson = dict(id=d['id'], error=traceback.format_exc())
                 errors.append(errorJson)
             else:
                 successes += 1
