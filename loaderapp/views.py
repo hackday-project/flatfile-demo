@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 import requests
 import json
@@ -36,62 +35,62 @@ class FlatFileApi:
         fetch_url = f"{self.FLAT_FILE_URL}batch/{batch_id}/"
         return self._make_get_call(fetch_url)
 
-
-class LoadBrandFile(APIView):
-
-    def post(self, request):
-        id = request.POST['batch_id']
-        dct = FlatFileApi().fetch_rows_by_batch_id(id)
-        errors = list()
-        successes = 0
-        for d in dct['data']:
-            try:
-                row = d['mapped']
-                version = row['version']
-                threshold = Decimal(row['min_threshold'])
-                brand, _ = Brand.objects.get_or_create(key=row['key'], defaults={'name': row['key']})
-                BrandThreshold.objects.create(version=version, min_threshold=threshold, brand=brand)
-            except Exception:
-                errorJson = dict(id=d['id'], error=traceback.format_exc())
-                errors.append(errorJson)
-            else:
-                successes += 1
-        response = {'batch_id': id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
-        return JsonResponse(response, safe=False)
-
-
-class LoadItemFile(APIView):
-
-    def post(self, request):
-        id = request.POST['batch_id']
-        dct = FlatFileApi().fetch_rows_by_batch_id(id)
-        errors = list()
-        successes = 0
-        for d in dct['data']:
-            try:
-                row = d['mapped']
-                item_key = row['item_key']
-                brand_key = row['brand']
-                category_key = row['category']
-                banner, region = row['banner'], row['region']
-                namespace = row['namespace'] or f'namespace_for_{banner}_{region}'
-                brand, _ = Brand.objects.get_or_create(key=brand_key, defaults={'name': brand_key})
-                category, _ = CategoryTree.objects.get_or_create(key=category_key, defaults={'name': category_key})
-                Item.objects.create(item_key=item_key, namespace=namespace, banner=banner, category=category, brand=brand)
-            except Exception:
-                errorJson = dict(id=d['id'], error=traceback.format_exc())
-                errors.append(errorJson)
-            else:
-                successes += 1
-        response = {'batch_id': id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
-        return JsonResponse(response, safe=False)
+from django.views.decorators.csrf import csrf_exempt  # TODO: undo this
+@csrf_exempt  # TODO: undo this
+def load_brand_file(request):
+    if request.method == 'GET':
+        return JsonResponse({'success':True}, safe=False)
+    id = json.loads(request.body)['batch_id']
+    dct = FlatFileApi().fetch_rows_by_batch_id(id)
+    errors = list()
+    successes = 0
+    for d in dct['data']:
+        try:
+            row = d['mapped']
+            version = row['version']
+            threshold = Decimal(row['min_threshold'])
+            brand, _ = Brand.objects.get_or_create(key=row['key'], defaults={'name': row['key']})
+            BrandThreshold.objects.create(version=version, min_threshold=threshold, brand=brand)
+        except Exception:
+            errorJson = dict(id=d['id'], error=traceback.format_exc())
+            errors.append(errorJson)
+        else:
+            successes += 1
+    response = {'batch_id': id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
+    return JsonResponse(response, safe=False)
 
 
-class EmbedToken(APIView):
+@csrf_exempt
+def load_item_file(request):
+    id = request.POST['batch_id']
+    dct = FlatFileApi().fetch_rows_by_batch_id(id)
+    errors = list()
+    successes = 0
+    for d in dct['data']:
+        try:
+            row = d['mapped']
+            item_key = row['item_key']
+            brand_key = row['brand']
+            category_key = row['category']
+            banner, region = row['banner'], row['region']
+            namespace = row['namespace'] or f'namespace_for_{banner}_{region}'
+            brand, _ = Brand.objects.get_or_create(key=brand_key, defaults={'name': brand_key})
+            category, _ = CategoryTree.objects.get_or_create(key=category_key, defaults={'name': category_key})
+            Item.objects.create(item_key=item_key, namespace=namespace, banner=banner, category=category, brand=brand)
+        except Exception:
+            errorJson = dict(id=d['id'], error=traceback.format_exc())
+            errors.append(errorJson)
+        else:
+            successes += 1
+    response = {'batch_id': id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
+    return JsonResponse(response, safe=False)
+
+
+class EmbedTokenView:
     BRAND_EMBED_PRIVATE_KEY = "WV5ups3cIjAkgmp6PdZsHwDUXuCXXe5N9y9yiGGSvahQewRV1c0VJiTVI8L7H5YZ"
     BRAND_EMBED_ID = "897b2c8b-123e-428c-a51d-354b9b834426"
 
-    def post(self, request):
+    def get_token(self, request):
         sub = request.POST['user_id']
         load_type = request.POST['type']
         if load_type == 'brand':
