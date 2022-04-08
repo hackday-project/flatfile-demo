@@ -3,4 +3,5 @@ requests==2.23.0                      # [Apache] | <OWNER: kyle.beauregard@numer
 # Database and Storage
 PyMySQL==1.0.2                        # [GPL v2]
 django-cors-headers==3.4.0
-djangorestframework_simplejwt==5.0.0
+djangorestframework==3.13.1
+pyjwt==2.3.0
