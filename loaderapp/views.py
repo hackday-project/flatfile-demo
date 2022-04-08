@@ -62,7 +62,7 @@ def load_brand_file(request):
 
 @csrf_exempt
 def load_item_file(request):
-    id = request.POST['batch_id']
+    id = json.loads(request.body)['batch_id']
     dct = FlatFileApi().fetch_rows_by_batch_id(id)
     errors = list()
     successes = 0
