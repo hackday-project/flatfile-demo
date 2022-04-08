@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 import requests
 import json
@@ -61,11 +60,11 @@ def load_brand_file(request):
     return JsonResponse(response, safe=False)
 
 
-class EmbedToken(APIView):
+class EmbedTokenView:
     BRAND_EMBED_PRIVATE_KEY = "WV5ups3cIjAkgmp6PdZsHwDUXuCXXe5N9y9yiGGSvahQewRV1c0VJiTVI8L7H5YZ"
     BRAND_EMBED_ID = "897b2c8b-123e-428c-a51d-354b9b834426"
 
-    def post(self, request):
+    def get_token(self, request):
         sub = request.POST['user_id']
         load_type = request.POST['type']
         if load_type == 'brand':
