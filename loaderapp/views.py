@@ -38,6 +38,8 @@ class FlatFileApi:
 from django.views.decorators.csrf import csrf_exempt  # TODO: undo this
 @csrf_exempt  # TODO: undo this
 def load_brand_file(request):
+    print(request)
+    print(request.POST)
     if request.method == 'GET':
         return JsonResponse({'success':True}, safe=False)
     id = json.loads(request.body)['batch_id']
