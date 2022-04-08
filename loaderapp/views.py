@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 import requests
 import json
-from loaderapp.models import BrandThreshold, Brand
+from loaderapp.models import BrandThreshold, Brand, CategoryTree, Item
 from decimal import Decimal
 import traceback
 import jwt
@@ -51,6 +51,33 @@ class LoadBrandFile(APIView):
                 threshold = Decimal(row['min_threshold'])
                 brand, _ = Brand.objects.get_or_create(key=row['key'], defaults={'name': row['key']})
                 BrandThreshold.objects.create(version=version, min_threshold=threshold, brand=brand)
+            except Exception:
+                errorJson = dict(id=d['id'], error=traceback.format_exc())
+                errors.append(errorJson)
+            else:
+                successes += 1
+        response = {'batch_id': id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
+        return JsonResponse(response, safe=False)
+
+
+class LoadItemFile(APIView):
+
+    def post(self, request):
+        id = request.POST['batch_id']
+        dct = FlatFileApi().fetch_rows_by_batch_id(id)
+        errors = list()
+        successes = 0
+        for d in dct['data']:
+            try:
+                row = d['mapped']
+                item_key = row['item_key']
+                brand_key = row['brand']
+                category_key = row['category']
+                banner, region = row['banner'], row['region']
+                namespace = row['namespace'] or f'namespace_for_{banner}_{region}'
+                brand, _ = Brand.objects.get_or_create(key=brand_key, defaults={'name': brand_key})
+                category, _ = CategoryTree.objects.get_or_create(key=category_key, defaults={'name': category_key})
+                Item.objects.create(item_key=item_key, namespace=namespace, banner=banner, category=category, brand=brand)
             except Exception:
                 errorJson = dict(id=d['id'], error=traceback.format_exc())
                 errors.append(errorJson)

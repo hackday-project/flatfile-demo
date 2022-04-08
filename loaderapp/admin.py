@@ -1,5 +1,5 @@
 from django.contrib import admin
-from loaderapp.models import Brand, BrandThreshold
+from loaderapp.models import Brand, BrandThreshold, Item
 # Register your models here.
 
 
@@ -14,3 +14,7 @@ class BrandThresholdAdmin(admin.ModelAdmin):
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
     list_display = ('key', 'name')
+
+@admin.register(Item)
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('item_key', 'brand', 'category', 'namespace', 'banner')
