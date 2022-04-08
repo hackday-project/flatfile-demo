@@ -40,7 +40,7 @@ from django.views.decorators.csrf import csrf_exempt  # TODO: undo this
 def load_brand_file(request):
     if request.method == 'GET':
         return JsonResponse({'success':True}, safe=False)
-    id = request.POST['batch_id']
+    id = json.loads(request.body)['batch_id']
     dct = FlatFileApi().fetch_rows_by_batch_id(id)
     errors = list()
     successes = 0
