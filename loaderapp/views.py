@@ -36,28 +36,29 @@ class FlatFileApi:
         fetch_url = f"{self.FLAT_FILE_URL}batch/{batch_id}/"
         return self._make_get_call(fetch_url)
 
-
-class LoadBrandFile(APIView):
-
-    def post(self, request):
-        id = request.POST['batch_id']
-        dct = FlatFileApi().fetch_rows_by_batch_id(id)
-        errors = list()
-        successes = 0
-        for d in dct['data']:
-            try:
-                row = d['mapped']
-                version = row['version']
-                threshold = Decimal(row['min_threshold'])
-                brand, _ = Brand.objects.get_or_create(key=row['key'], defaults={'name': row['key']})
-                BrandThreshold.objects.create(version=version, min_threshold=threshold, brand=brand)
-            except Exception:
-                errorJson = dict(id=d['id'], error=traceback.format_exc())
-                errors.append(errorJson)
-            else:
-                successes += 1
-        response = {'batch_id': id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
-        return JsonResponse(response, safe=False)
+from django.views.decorators.csrf import csrf_exempt  # TODO: undo this
+@csrf_exempt  # TODO: undo this
+def load_brand_file(request):
+    if request.method == 'GET':
+        return JsonResponse({'success':True}, safe=False)
+    id = request.POST['batch_id']
+    dct = FlatFileApi().fetch_rows_by_batch_id(id)
+    errors = list()
+    successes = 0
+    for d in dct['data']:
+        try:
+            row = d['mapped']
+            version = row['version']
+            threshold = Decimal(row['min_threshold'])
+            brand, _ = Brand.objects.get_or_create(key=row['key'], defaults={'name': row['key']})
+            BrandThreshold.objects.create(version=version, min_threshold=threshold, brand=brand)
+        except Exception:
+            errorJson = dict(id=d['id'], error=traceback.format_exc())
+            errors.append(errorJson)
+        else:
+            successes += 1
+    response = {'batch_id': id, 'errors': errors, 'successes': f'{successes}/{dct["pagination"]["totalCount"]}'}
+    return JsonResponse(response, safe=False)
 
 
 class EmbedToken(APIView):
