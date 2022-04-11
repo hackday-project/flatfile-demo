@@ -89,6 +89,8 @@ def load_item_file(request):
 class EmbedTokenView:
     BRAND_EMBED_PRIVATE_KEY = "WV5ups3cIjAkgmp6PdZsHwDUXuCXXe5N9y9yiGGSvahQewRV1c0VJiTVI8L7H5YZ"
     BRAND_EMBED_ID = "897b2c8b-123e-428c-a51d-354b9b834426"
+    ITEM_EMBED_PRIVATE_KEY = "smHENOcmAIUbWq42792RJdmZi95sLzIJnE4izxHncIEwtuLbCwHhG6qcaqtv79cm"
+    ITEM_EMBED_ID = "acf91595-476b-4338-9e7e-0621b7c49d01"
 
     def get_token(self, request):
         sub = request.POST['user_id']
@@ -96,6 +98,9 @@ class EmbedTokenView:
         if load_type == 'brand':
             embed_id = self.BRAND_EMBED_ID
             priv_key = self.BRAND_EMBED_PRIVATE_KEY
+        elif load_type == 'item':
+            embed_id = self.ITEM_EMBED_ID
+            priv_key = self.ITEM_EMBED_PRIVATE_KEY
         tok = jwt.encode({'embed': embed_id, 'sub': sub}, key=priv_key)
         result = {'type': load_type, 'user_id': sub, 'token': tok}
         return JsonResponse(result)
