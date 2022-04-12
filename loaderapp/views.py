@@ -92,9 +92,13 @@ class EmbedTokenView:
     ITEM_EMBED_PRIVATE_KEY = "smHENOcmAIUbWq42792RJdmZi95sLzIJnE4izxHncIEwtuLbCwHhG6qcaqtv79cm"
     ITEM_EMBED_ID = "acf91595-476b-4338-9e7e-0621b7c49d01"
 
+    ITEM_EMBED_PRIVATE_KEY = "smHENOcmAIUbWq42792RJdmZi95sLzIJnE4izxHncIEwtuLbCwHhG6qcaqtv79cm"
+    ITEM_EMBED_ID = "acf91595-476b-4338-9e7e-0621b7c49d01"
+
+    @csrf_exempt  # TODO: undo this
     def get_token(self, request):
-        sub = request.POST['user_id']
-        load_type = request.POST['type']
+        sub = json.loads(request.body)['user_id']
+        load_type = json.loads(request.body)['type']
         if load_type == 'brand':
             embed_id = self.BRAND_EMBED_ID
             priv_key = self.BRAND_EMBED_PRIVATE_KEY

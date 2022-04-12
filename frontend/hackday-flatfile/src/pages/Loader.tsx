@@ -5,6 +5,7 @@ import { flatfileImporter } from "@flatfile/sdk";
 
 import './Loader.css';
 import brand from '../assets/brand.webp';
+import itemImage from '../assets/item_image.png';
 
 const brandDescription = "Upload a brand threshold CSV to Flatfile"
 const itemDescription = "Upload an item CSV to Flatfile"
@@ -13,6 +14,8 @@ const Loader = () => {
   const isInitialMount = useRef(true); // Keep track of when the inital render happens
   const [type, setType] = useState(""); 
   const [token, setToken] = useState(""); // JWT token
+  const [brandToken, setBrandToken] = useState("");
+  const [itemToken, setItemToken] = useState("");
 
   const typeRef = useRef(type); // Create mutable object from the type state
 
@@ -71,35 +74,50 @@ const Loader = () => {
     importer.launch();
   }, [token]);
 
+  useEffect(() => {
+    setToken(itemToken);
+  }, [itemToken]);
+
+  useEffect(() => {
+    setToken(brandToken);
+  }, [brandToken]);
 
   const openFlatfile = async (type: String): Promise<any> => {
-
-    if (type.toLowerCase() === "item") {
-      setToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWJlZCI6ImFjZjkxNTk1LTQ3NmItNDMzOC05ZTdlLTA2MjFiN2M0OWQwMSIsInN1YiI6InRlc3QifQ.GBeL0pnF4HivxQp9WGSJA4usv_zx8yUVFydCd4F2cJE");
-    } else if (type.toLowerCase() === "brand") {
-      setToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWJlZCI6Ijg5N2IyYzhiLTEyM2UtNDI4Yy1hNTFkLTM1NGI5YjgzNDQyNiIsInN1YiI6InRlc3QifQ.mjwbzM1ec_YHkeVQlnP9ZkrFwmZPjY8TO_7YiLUK7no");
-    }
-
-    // let request_body = JSON.stringify({
-    //   user_id: "test",
-    //   type: type.toLowerCase()
-    // });
-
-    // let response: any = await fetch("http://localhost:8000/loaderapp/embed-token", {
-    //   mode: 'cors',
-    //   method: 'POST',
-    //   headers: {'Content-Type':'application/json'},
-    //   body: request_body
-    // })
-    // response = await response.json();
-    // let token = response.token;
-    // console.log(token);
-    
     if (type.toLowerCase() === "item") {
       setType("item");
+      if (!itemToken) {
+        const jwtToken = await getToken("item");
+        setItemToken(jwtToken);
+      } else {
+        setToken(itemToken);
+      }
     } else if (type.toLowerCase() === "brand") {
       setType("brand");
+      if (!brandToken) {
+        const jwtToken = await getToken("brand");
+        setBrandToken(jwtToken);
+      } else {
+        setToken(brandToken);
+      }
     }
+    
+  }
+
+  const getToken = async (type: string) => {
+    const request_body = JSON.stringify({
+      user_id: "test",
+      type: type.toLowerCase()
+    });
+
+    let response: any = await fetch("http://localhost:8000/loaderapp/embed-token", {
+      mode: 'cors',
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: request_body
+    })
+    response = await response.json();
+    const token = response.token;
+    return token;
   }
 
 
@@ -117,7 +135,7 @@ const Loader = () => {
         <CustomCard 
           title="Item" 
           description={itemDescription} 
-          image={brand}
+          image={itemImage}
           openFlatfile={openFlatfile}  
           type="item"
         />
